@@ -226,7 +226,7 @@ export class Runestone {
         public edicts: Array<Edict> = [],
         public etching: Option<Etching>,
         public mint: Option<RuneId>,
-        public pointer: Option<number>
+        public pointer: Option<number>,
         public flaws: Option<number>                       // L1ON change
     ) {
     }
@@ -272,12 +272,12 @@ export class Runestone {
                 true
             );
 
-            return new Runestone([], some(etching), none(), pointer);
+            return new Runestone([], some(etching), none(), pointer, some(0));
         } else if (type === 'mint') {
             json = json as MintJSON
             const pointer = typeof json.pointer === 'number' ? some(json.pointer) : none();
 
-            return new Runestone([], none(), some(new RuneId(json.block, json.txIdx)), pointer);
+            return new Runestone([], none(), some(new RuneId(json.block, json.txIdx)), pointer, some(0));
         } else {
             throw new Error(`not ${type} support now`)
         }
@@ -298,7 +298,7 @@ export class Runestone {
             const mint = message.getMint();
             const pointer = message.getPointer();
 
-            return some(new Runestone(message.edicts, etching, mint, pointer));
+            return some(new Runestone(message.edicts, etching, mint, pointer, some(message.flaws)));
 
         }
 
