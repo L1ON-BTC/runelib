@@ -227,6 +227,7 @@ export class Runestone {
         public etching: Option<Etching>,
         public mint: Option<RuneId>,
         public pointer: Option<number>
+        public flaws: Option<number>                       // L1ON change
     ) {
     }
 
@@ -528,7 +529,9 @@ export class Message {
                 let val = integers[i + 1];
                 const vals = fields.get(Number(tag)) || [];
                 vals.push(val);
-
+                if ( Number(tag) % 2 == 0 && !Tag[Number(tag)]) {        // L1ON change for UnrecognizedEvenTag cenotaph detection
+                    flaws |= Flaw.UnrecognizedEvenTag;                   // L1ON change for UnrecognizedEvenTag cenotaph detection
+                }                                                        // L1ON change for UnrecognizedEvenTag cenotaph detection
                 fields.set(Number(tag), vals);
 
                 i += 2;
