@@ -765,7 +765,7 @@ export class Message {
 
     getCap(): Option<number> {
         if (!this.fields.has(Tag.Cap)) {
-            return none();
+            return some(Number(0));  //L1ON change
         }
         const [cap] = this.fields.get(Tag.Cap) as [bigint];
 
@@ -774,7 +774,7 @@ export class Message {
 
     getAmount(): Option<number> {
         if (!this.fields.has(Tag.Amount)) {
-            return none();
+            return some(Number(0));  //L1ON change
         }
         const [amount] = this.fields.get(Tag.Amount) as [bigint];
 
@@ -788,7 +788,7 @@ export class Message {
         }
         const [symbol] = this.fields.get(Tag.Symbol) as [bigint];
 
-        return some(String.fromCharCode(Number(symbol)));
+        return some(String.fromCodePoint(Number(symbol)));    // L1ON change
     }
 
 
