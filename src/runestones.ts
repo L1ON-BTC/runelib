@@ -497,16 +497,12 @@ export class Runestone {
 }
 
 
-
-
 export class Message {
-
     constructor(
         public fields: Map<number, Array<bigint>> = new Map(),
         public edicts: Array<Edict> = [],
         public flaws: number = 0,
     ) {
-
     }
 
     static from_integers(tx: Transaction, integers: bigint[]): Message {
