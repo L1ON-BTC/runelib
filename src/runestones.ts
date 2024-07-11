@@ -517,14 +517,23 @@ export class Message {
         let isBody = false
 
         for (let i = 0; i < integers.length;) {
-            let tag = integers[i];
-            if (Number(tag) === Tag.Body) {
-                isBody = true
-                i += 1
-                continue
-            }
+
+            // let tag = integers[i];
+            // if (Number(tag) === Tag.Body) {
+            //     isBody = true
+            //     i += 1
+            //     continue
+            // }
 
             if (!isBody) {
+                // L1On change - moved block from before `if` inside here
+                let tag = integers[i];
+                if (Number(tag) === Tag.Body) {
+                    isBody = true
+                    i += 1
+                    continue
+                }
+
                 // Fields:
                 let val = integers[i + 1];
                 const vals = fields.get(Number(tag)) || [];
@@ -561,9 +570,11 @@ export class Message {
 
                     id = next.value() as RuneId;
                     edicts.push(edict.value() as Edict);
+
+                    i += 4;             // L1ON change, was after loop, moved here
                 }
 
-                i += 4;
+                //i += 4;
             }
         }
 
