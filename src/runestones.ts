@@ -566,9 +566,9 @@ export class Message {
                     id = next.value() as RuneId;
                     edicts.push(edict.value() as Edict);
 
-                    i += 4;             // L1ON fix, was after loop, moved here
+                    i += 4; // L1ON fix, was after loop, moved here
                 }
-                // i += 4;
+                i += 4;
             }
         }
 
