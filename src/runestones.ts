@@ -526,12 +526,12 @@ export class Message {
             // }
 
             if (!isBody) {
-                let tag = integers[i];  // L1On change - moved block from before `if` ^^ inside here
-                if (Number(tag) === Tag.Body) {
-                    isBody = true
-                    i += 1
-                    continue
-                }
+                let tag = integers[i];                  // L1On fix - moved block from before `if` ^^ inside here
+                if (Number(tag) === Tag.Body) {   // L1On fix
+                    isBody = true;                      // L1On fix
+                    i += 1;                             // L1On fix
+                    continue                            // L1On fix
+                }                                       // L1On fix
 
                 // Fields:
                 let val = integers[i + 1];
@@ -570,9 +570,9 @@ export class Message {
                     id = next.value() as RuneId;
                     edicts.push(edict.value() as Edict);
 
-                    i += 4;             // L1ON change, was after loop, moved here
+                    i += 4;             // L1ON fix, was after loop, moved here
                 }
-                //i += 4;
+                // i += 4;
             }
         }
 
