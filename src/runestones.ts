@@ -526,8 +526,7 @@ export class Message {
             // }
 
             if (!isBody) {
-                // L1On change - moved block from before `if` inside here
-                let tag = integers[i];
+                let tag = integers[i];  // L1On change - moved block from before `if` ^^ inside here
                 if (Number(tag) === Tag.Body) {
                     isBody = true
                     i += 1
@@ -573,7 +572,6 @@ export class Message {
 
                     i += 4;             // L1ON change, was after loop, moved here
                 }
-
                 //i += 4;
             }
         }
