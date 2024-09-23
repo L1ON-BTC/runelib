@@ -127,7 +127,7 @@ export enum Tag {
 
 
 export enum Flaw {
-    EdictOutput,
+    initnone,
     EdictRuneId,
     InvalidScript,
     Opcode,
@@ -137,6 +137,7 @@ export enum Flaw {
     UnrecognizedEvenTag,
     UnrecognizedFlag,
     Varint,
+    EdictOutput,
 }
 
 export class Range {
