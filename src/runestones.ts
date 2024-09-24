@@ -532,6 +532,12 @@ export class Message {
 
                 // Fields:
                 let val = integers[i + 1];
+
+                // TruncatedField cenotaph detection     // by L1ON
+                if (val === undefined) {                // by  L1ON
+                    flaws |= Flaw.TruncatedField;       // by  L1ON
+                }                                       // by  L1ON
+
                 const vals = fields.get(Number(tag)) || [];
                 vals.push(val);
                 if ( Number(tag) % 2 == 0 && !Tag[Number(tag)]) {        // L1ON change for UnrecognizedEvenTag cenotaph detection
