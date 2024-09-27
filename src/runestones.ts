@@ -184,6 +184,7 @@ export class Etching {
     static readonly MAX_DIVISIBILITY: number = 38;
     static readonly MAX_SPACERS: number = 0b00000111_11111111_11111111_11111111;
 
+
     constructor(
         public divisibility: Option<number>,
         public premine: Option<number>,
@@ -191,7 +192,8 @@ export class Etching {
         public spacers: Option<number>,
         public symbol: Option<string>,
         public terms: Option<Terms>,
-        public turbo: boolean) {
+        public turbo: boolean,
+        public flaws: number) {
 
     }
 
@@ -211,6 +213,7 @@ export interface EtchJSON {
     endOffset?: number;
 
     pointer?: number;
+    turbo?: boolean;
 }
 
 export interface MintJSON {
@@ -223,7 +226,6 @@ export interface MintJSON {
 export class Runestone {
 
     static readonly MAGIC_NUMBER: number = 93;
-    static readonly maxU128: bigint = BigInt("340282366920938463463374607431768211455");  // By L1ON
 
     constructor(
         public edicts: Array<Edict> = [],
@@ -240,14 +242,6 @@ export class Runestone {
         if (type === 'etch') {
             json = json as EtchJSON
             const runename = Rune.fromName(json.name);
-
-            //overflow-supply  // By L1ON
-            if ( json.amount && json.cap ) {
-                const max_supply: bigint = BigInt( json.amount) * BigInt( json.cap || "0" )  // By L1ON
-                if (max_supply > this.maxU128)    // By L1ON
-                    flaws |= Flaw.SupplyOverflow   // By L1ON
-            }   // By L1ON
-
 
             const terms = new Terms(
                 json.amount,
@@ -270,9 +264,9 @@ export class Runestone {
 
             const symbol = json.symbol ? some(json.symbol) : none();
 
-
             const pointer = typeof json.pointer === 'number' ? some(json.pointer) : none();
 
+            const turbo = typeof json.turbo === 'boolean'  && json.turbo == false ? true : false;
 
             const etching = new Etching(
                 divisibility,
@@ -281,7 +275,8 @@ export class Runestone {
                 spacers,
                 symbol,
                 some(terms),
-                true
+                turbo,
+                flaws
             );
 
             return new Runestone([], some(etching), none(), pointer, some(flaws));
@@ -306,6 +301,8 @@ export class Runestone {
             const message = Message.from_integers(tx, integers.value() as bigint[]);
 
             const etching = message.getEtching();
+            if ( etching.value()?.flaws )
+                message.flaws |= etching.value()?.flaws || 0;
 
             const mint = message.getMint();
             const pointer = message.getPointer();
@@ -510,6 +507,8 @@ export class Runestone {
 
 
 export class Message {
+    static readonly maxU128: bigint = BigInt("340282366920938463463374607431768211455");  // By L1ON
+
     constructor(
         public fields: Map<number, Array<bigint>> = new Map(),
         public edicts: Array<Edict> = [],
@@ -706,7 +705,16 @@ export class Message {
         const turbo = this.hasFlags(Flag.Turbo);
 
 
-        return some(new Etching(divisibility, premine, rune, spacers, symbol, terms, turbo));
+        //overflow-supply  // By L1ON
+        let flaw:number = 0; // By L1ON
+        if ( terms.value()?.amount && terms.value()?.cap ) {
+            const max_supply: bigint = BigInt( terms.value()?.amount || 0) * BigInt( terms.value()?.cap || "0" )  // By L1ON
+            if (max_supply > Message.maxU128)    // By L1ON
+                flaw |= Flaw.SupplyOverflow   // By L1ON
+        }   // By L1ON
+
+
+        return some(new Etching(divisibility, premine, rune, spacers, symbol, terms, turbo, flaw));
 
     }
 
