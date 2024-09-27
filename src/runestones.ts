@@ -301,7 +301,7 @@ export class Runestone {
             const message = Message.from_integers(tx, integers.value() as bigint[]);
 
             const etching = message.getEtching();
-            if ( !message.flaws && etching.value()?.flaws )  //By L1ON
+            if ( etching.value()?.flaws )  //By L1ON
                  message.flaws |= etching.value()?.flaws || 0;
 
             const mint = message.getMint();
