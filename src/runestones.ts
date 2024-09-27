@@ -223,6 +223,8 @@ export interface MintJSON {
 export class Runestone {
 
     static readonly MAGIC_NUMBER: number = 93;
+    static readonly maxU128: bigint = BigInt("340282366920938463463374607431768211455");  // By L1ON
+
     constructor(
         public edicts: Array<Edict> = [],
         public etching: Option<Etching>,
@@ -233,10 +235,19 @@ export class Runestone {
     }
 
     static create(json: EtchJSON | MintJSON, type: 'etch' | 'mint' | 'transfer' = 'etch') {
+        let flaws =  0;
 
         if (type === 'etch') {
             json = json as EtchJSON
             const runename = Rune.fromName(json.name);
+
+            //overflow-supply  // By L1ON
+            if ( json.amount && json.cap ) {
+                const max_supply: bigint = BigInt( json.amount) * BigInt( json.cap || "0" )  // By L1ON
+                if (max_supply > this.maxU128)    // By L1ON
+                    flaws |= Flaw.SupplyOverflow   // By L1ON
+            }   // By L1ON
+
 
             const terms = new Terms(
                 json.amount,
@@ -273,12 +284,12 @@ export class Runestone {
                 true
             );
 
-            return new Runestone([], some(etching), none(), pointer, some(0));
+            return new Runestone([], some(etching), none(), pointer, some(flaws));
         } else if (type === 'mint') {
             json = json as MintJSON
             const pointer = typeof json.pointer === 'number' ? some(json.pointer) : none();
 
-            return new Runestone([], none(), some(new RuneId(json.block, json.txIdx)), pointer, some(0));
+            return new Runestone([], none(), some(new RuneId(json.block, json.txIdx)), pointer, some(flaws));
         } else {
             throw new Error(`not ${type} support now`)
         }
