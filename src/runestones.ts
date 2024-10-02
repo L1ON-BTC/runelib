@@ -148,7 +148,7 @@ export class Range {
 
 
 export class Terms {
-    constructor(public amount: number, public cap: number, public height: Range, public offset: Range) {
+    constructor(public amount: bigint, public cap: bigint, public height: Range, public offset: Range) {
 
     }
 }
@@ -187,7 +187,7 @@ export class Etching {
 
     constructor(
         public divisibility: Option<number>,
-        public premine: Option<number>,
+        public premine: Option<bigint>,
         public rune: Option<Rune>,
         public spacers: Option<number>,
         public symbol: Option<string>,
@@ -203,10 +203,10 @@ export class Etching {
 export interface EtchJSON {
     name: string;
     divisibility?: number;
-    premine?: number;
+    premine?: bigint;
     symbol?: string;
-    amount: number;
-    cap: number;
+    amount: bigint;
+    cap: bigint;
     startHeight?: number;
     endHeight?: number;
     startOffset?: number;
@@ -244,8 +244,8 @@ export class Runestone {
             const runename = Rune.fromName(json.name);
 
             const terms = new Terms(
-                json.amount,
-                json.cap,
+                BigInt(json.amount),
+                    BigInt(json.cap),
                 new Range(
                     json.startHeight ? some(json.startHeight) : none(),
                     json.endHeight ? some(json.endHeight) : none()
@@ -731,13 +731,13 @@ export class Message {
         return some(Number(divisibility));
     }
 
-    getPremine(): Option<number> {
+    getPremine(): Option<bigint> {
         if (!this.fields.has(Tag.Premine)) {
             return none();
         }
         const [premine] = this.fields.get(Tag.Premine) as [bigint];
 
-        return some(Number(premine));
+        return some(BigInt(premine));
     }
 
     getRune(): Option<Rune> {
@@ -797,22 +797,22 @@ export class Message {
         return some(Number(offsetEnd));
     }
 
-    getCap(): Option<number> {
+    getCap(): Option<bigint> {
         if (!this.fields.has(Tag.Cap)) {
-            return some(Number(0));  //L1ON change
+            return some(BigInt(0));  //L1ON change
         }
         const [cap] = this.fields.get(Tag.Cap) as [bigint];
 
-        return some(Number(cap));
+        return some(BigInt(cap));
     }
 
-    getAmount(): Option<number> {
+    getAmount(): Option<bigint> {
         if (!this.fields.has(Tag.Amount)) {
-            return some(Number(0));  //L1ON change
+            return some(BigInt(0));  //L1ON change
         }
         const [amount] = this.fields.get(Tag.Amount) as [bigint];
 
-        return some(Number(amount));
+        return some(BigInt(amount));
     }
 
 
@@ -854,7 +854,7 @@ export class Message {
         const offset = new Range(offsetStart, offsetEnd);
 
 
-        return some(new Terms(amount.value() as number, cap.value() as number, height, offset));
+        return some(new Terms(amount.value() as bigint, cap.value() as bigint, height, offset));
     }
 
 
