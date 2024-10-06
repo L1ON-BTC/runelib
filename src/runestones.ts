@@ -295,8 +295,16 @@ export class Runestone {
 
         const payload = Runestone.payload(tx);
 
+
         if (payload.isSome()) {
-            const integers = Runestone.integers(payload.value() as number[]);
+            let integers: any;       //L1ON change add Variant Cenotaph detection
+            //const integers = Runestone.integers(payload.value() as number[]);
+            try {
+                integers = Runestone.integers(payload.value() as number[]);   //L1ON change
+            } catch (e) {    //L1ON change
+                //console.log('-EEERRR',)        //L1ON change
+                return some(new Runestone( [], none(), none(), none(), some(Flaw.Varint)));  //L1ON change
+            }
 
             const message = Message.from_integers(tx, integers.value() as bigint[]);
 
@@ -361,20 +369,29 @@ export class Runestone {
                 continue;
             }
 
-            for (let i = 2; i < ls.length; i++) {
-                const element = ls[i];
-
-                if (element instanceof Uint8Array) {
-                    return some(Array.from(element))
-                }
-                return none();
+            // L1ON CHANGE
+            // for (let i = 2; i < ls.length; i++) {
+            //     const element = ls[i];
+            //
+            //     if (element instanceof Uint8Array) {
+            //         return some(Array.from(element))
+            //     }
+            //     return none();
+            // }
+            // return none();
+            const results = [];              // L1ON Chnage to process all integers and detect varint flaw
+            for (let i = 2; i < ls.length; i++) {  // L1ON Chnage to process all integers
+                const element = ls[i];              // L1ON Chnage to process all integers
+                if (element instanceof Uint8Array) {       // L1ON Chnage to process all integers
+                    results.push(...Array.from(element));       // L1ON Chnage to process all integers
+                }                                          // L1ON Chnage to process all integers
+            }                                              // L1ON Chnage to process all integers
+            // Determine what to return based on whether the array is empty
+            if (results.length > 0) {                      // L1ON Chnage to process all integers
+                return some(results);                   // L1ON Chnage to process all integers
             }
-
-
-            return none();
-
+            return none();       // L1ON Chnage to process all integers
         }
-
         return none();
     }
 
